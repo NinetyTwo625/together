@@ -1,8 +1,8 @@
-package com.together.domain.image;
+package com.together.domain.subscribe;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.together.domain.user.User;
-
+import com.together.domain.user.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,17 +16,27 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 @Entity
-public class Image {
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name="subscribe_uk",
+                        columnNames = {"fromUserId", "toUserId"}
+                )
+        }
+)
+public class Subscribe {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String caption;
-    private String postImageUrl;
 
-    @JsonIgnoreProperties({"images"})
-    @JoinColumn(name="userId")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User user;
+    @JoinColumn(name = "fromUserId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User fromUser;
+
+    @JoinColumn(name = "toUserId")
+    @ManyToOne
+    private User toUser;
 
     private LocalDateTime createDate;
 
@@ -34,4 +44,5 @@ public class Image {
     public void createDate() {
         this.createDate = LocalDateTime.now();
     }
+
 }

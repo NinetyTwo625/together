@@ -1,5 +1,6 @@
 package com.together.service;
 
+import com.together.domain.subscribe.SubscribeRepository;
 import com.together.domain.user.User;
 import com.together.domain.user.UserRepository;
 import com.together.handler.ex.CustomApiException;
@@ -23,6 +24,8 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final SubscribeRepository subscribeRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${file.path}")
@@ -65,6 +68,13 @@ public class UserService {
         dto.setUser(userEntity);
         dto.setPageOwnerState(pageUserId == principalId);
         dto.setImageCount(userEntity.getImages().size());
+
+        int subscribeState = subscribeRepository.mSubscribeState(principalId, pageUserId);
+        int subscribeCount = subscribeRepository.mSubscribeCount(pageUserId);
+
+        dto.setSubscribeState(subscribeState == 1);
+        dto.setSubscribeCount(subscribeCount);
+
         return dto;
     }
 
